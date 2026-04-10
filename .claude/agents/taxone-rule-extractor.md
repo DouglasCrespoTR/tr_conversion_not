@@ -482,6 +482,115 @@ projects/t1dw/src/app/
 3. **App convertida vs nativa:** `cat83` usa libs Mobilize (conversao automatica), `t1dw` e codigo nativo Angular — o rule-extractor deve indicar qual caminho o modulo segue
 4. **Services:** Endpoints chamados pelos services Angular revelam a API REST que consome as regras de negocio
 
+## Knowledge: Documentos Matriz — Especificacoes Funcionais (docs/documento_matriz/)
+
+Pasta local com **5.251 arquivos** (~1.4GB) de especificacoes funcionais do TAX ONE, organizados por area fiscal. Sao os **documentos de requisito originais** que definiram a implementacao do sistema — complementam a extracao de regras do codigo.
+
+**Caminho local:** `C:/Repositorios/tr_conversion_not/docs/documento_matriz/Documento_Matriz/`
+
+### Estrutura de Pastas
+
+| Pasta | Arquivos | Conteudo |
+|-------|----------|---------|
+| `Basicos/` | 1.060 | Core: importacao/exportacao (Job_Servidor), parametros, reports fiscais, contabilizacao, seguranca |
+| `Estadual/` | 1.334 | ICMS, GIA por estado, CIAP, ICMS-ST, ressarcimento, 80+ subpastas por obrigacao estadual |
+| `Federal/` | 417 | PIS/COFINS (CREDPIS), IPI, DIPJ, Transfer Pricing, DIRF, DARF, DCTF, INSS |
+| `SPED/` | 952 | EFD-PISCOFINS (327), EFD Fiscal (177), ECF (159), EFD-Reinf (148), ECD (77) |
+| `Municipal/` | 1.057 | ISS — 156 municipios com sistemas distintos (AGILIBLUE, AtendeNet, BETHA, DES, etc.) |
+| `Especificos/` | 250 | Combustiveis/SCANC, substancias controladas, telecomunicacoes, industrias especificas |
+| `Conexao_com_Onesource_BR/` | 28 | Integracao com SAP ECF — arquivos CAD0000-CAD2002 |
+| `Gestao_Estrategica/` | 83 | Dashboards de monitoring: tributos a pagar, analise fiscal, decisoes |
+| `Reforma_Tributaria/` | 69 | CBS (Contribuicao sobre Bens), IBS (Imposto sobre Bens), IS (Imposto Seletivo) |
+
+### Tipos de Arquivo
+
+| Tipo | Qtd | Conteudo |
+|------|-----|---------|
+| .docx | 2.136 | Documentos de requisito com regras de negocio (formato principal) |
+| .doc | 1.763 | Documentos de requisito legados (mesmo formato, mais antigos) |
+| .pdf | 526 | Referencias regulatorias, legislacao, atos normativos |
+| .xlsx | 232 | Layouts SAFX, formulas, mapeamentos DE-PARA, validacoes |
+
+### Template Padrao dos Documentos (DOCX/DOC)
+
+Todos seguem a mesma estrutura:
+
+```
+1. CABEÇALHO
+   - THOMSON REUTERS
+   - Modulo/Funcao
+   - Caminho de navegacao (Módulo > Submódulo > Menu)
+
+2. DOCUMENTO DE REQUISITO
+   - MFS/OS/CH: {numero_rastreamento}
+   - Nome: {autor}
+   - Descrição: {escopo}
+   - Data Alteração: {data}
+
+3. REGRAS DE NEGÓCIO
+   CÓD: RN01
+   DESCRIÇÃO: [descrição da regra]
+   - Campo: [nome do campo]
+   - Tipo: [A=Alfanumerico, N=Numerico, D=Data]
+   - Tamanho: [comprimento]
+   - Obrigatoriedade: [Sim/Nao/Condicional]
+   - Regra: [logica de negocio, validacao, calculo]
+   - MFS: [ticket de mudanca]
+```
+
+### Convencoes de Nomenclatura
+
+| Prefixo | Exemplo | Significado |
+|---------|---------|-------------|
+| `MTZ_` ou `MTZ-` | MTZ_CREDPIS_Sistema_de_Controle.docx | Documento matriz (99% dos arquivos) |
+| `MTZ_Carga_` | MTZ_Carga_343_Importacao_Parametros.docx | Especificacao de importacao de dados SAFX |
+| `MTZ_Tela_` | MTZ_Tela_Apuracao_Reforma_Tributaria.docx | Especificacao de tela/UI |
+| `MTZ_Geracao_` | MTZ_Geracao_Meio_Magnetico.docx | Geracao de arquivos/obrigacoes |
+| `MTZ_Relatorio_` | MTZ_Relatorio_de_Status_Contabeis.docx | Especificacao de relatorio |
+| `MTZ_JOB_SERVIDOR_` | MTZ_JOB_SERVIDOR_Importacao_SAFX2005.docx | Job de processamento batch |
+| `REQUISITO_MTZ-` | REQUISITO_MTZ-FCI.docx | Documento de requisito formal |
+| `DE-PARA` / `DE_PARA` | DE-PARA-ATO_COTEPE.xlsx | Tabela de mapeamento/conversao |
+
+### Numeracao de Regras nos Documentos
+
+As regras sao numeradas como **RN00, RN01, RN02...** (diferente das tags RV/RC/RF/RT/RW do output do extrator). Cada RN contem:
+- Descricao em linguagem natural (portugues)
+- Referencia a tabelas SAFX (SAFX07, SAFX09, SAFX348, etc.)
+- Campos com tipo, tamanho, obrigatoriedade
+- Logica de validacao e calculo
+- Ticket MFS/CH/OS de rastreabilidade
+
+### Como Usar na Extracao de Regras
+
+1. **ANTES de analisar o codigo:** Buscar documento matriz do modulo para entender a intencao original
+   ```bash
+   find "C:/Repositorios/tr_conversion_not/docs/documento_matriz" -ipath "*{MODULO}*" \( -name "*.docx" -o -name "*.doc" \) | head -30
+   ```
+
+2. **Correlacionar RN com codigo:** Cada RNxx do documento = implementacao em PL/SQL ou PB
+   - RN com campo e validacao → provavelmente em val_ent_objeto() ou IF no PL/SQL
+   - RN com formula → provavelmente em _FPROC ou _GRAVA
+   - RN com mapeamento → provavelmente em cursor ou INSERT...SELECT
+
+3. **Preencher contexto fiscal:** Os documentos explicam o **por que** da regra (legislacao, obrigacao) — usar para popular o campo "Contexto Fiscal" do output
+
+4. **Identificar regras nao implementadas:** Se um RNxx existe no documento mas nao ha codigo correspondente → documentar como gap
+
+5. **Layouts SAFX (.xlsx):** Contem especificacao de campos de importacao/exportacao — usar como referencia para mapeamento de dados
+
+6. **Documentos DE-PARA:** Tabelas de conversao entre sistemas — cada linha e uma regra de transformacao
+
+### Mapeamento Pasta ↔ Diretorio de Codigo
+
+| Pasta Documento Matriz | Diretorio PL/SQL (artifacts/sp/msaf/) | Diretorio PB (ws_objects/) |
+|----------------------|--------------------------------------|---------------------------|
+| Basicos/ | basico/ | BASICO/ |
+| Estadual/ | estadual/ | ESTADUAL/ |
+| Federal/ | federal/ | FEDERAL/ |
+| SPED/ | SPED/ | SPED/ |
+| Municipal/ | (dentro de estadual/ ou generico/) | MUNICIPAL/ |
+| Especificos/ | estadual/ (sub-pastas especificas) | ESTADUAL/Especificos/ |
+
 ## Knowledge: Onde as Regras de Negocio Vivem
 
 ### PL/SQL Packages (.pck/.sql) — `artifacts/sp/msaf/`
@@ -778,10 +887,19 @@ Window (w_man_rateio_custos.srw)
 
 ## Processo de Trabalho
 
-### Fase 1 — Inventario do Modulo
+### Fase 1 — Inventario do Modulo e Documentacao
 
 1. Receber o caminho do modulo (ex: `ESTADUAL/Safousp`, `SPED/EFD`)
-2. Mapear para todas as localizacoes fonte:
+
+2. **Buscar documentos matriz do modulo (PRIMEIRO):**
+```bash
+# Documentos de requisito do modulo
+find "C:/Repositorios/tr_conversion_not/docs/documento_matriz" -ipath "*{MODULO}*" \( -name "*.docx" -o -name "*.doc" \) | head -30
+```
+   - Ler os documentos principais (MTZ_) para entender regras RN00-RNxx e contexto fiscal
+   - Anotar tabelas SAFX referenciadas e campos obrigatorios
+
+3. **Mapear todas as localizacoes fonte:**
 
 ```bash
 # Fontes PowerBuilder
@@ -793,8 +911,8 @@ find "C:/Repositorios/taxone_dw/ws_objects/" -ipath "*{MODULO}*" -type f \( -nam
 find "C:/Repositorios/taxone_dw/artifacts/sp/" -ipath "*{MODULO}*" -name "*.pck" | head -200
 ```
 
-3. Contar arquivos por tipo e imprimir inventario
-4. Se o modulo tiver mais de 20 packages, dividir em batches por subdiretorio
+4. Contar arquivos por tipo e imprimir inventario
+5. Se o modulo tiver mais de 20 packages, dividir em batches por subdiretorio
 
 ### Fase 2 — Extracoes PL/SQL
 
