@@ -18,6 +18,9 @@ cp .env.example .env
 
 # 3. Copiar base de conhecimento (371MB, gitignored)
 cp -r /caminho/para/taxone-support-dev/knowledge .claude/knowledge/
+
+# 4. Instalar pre-commit hook (proteção contra secrets)
+cp scripts/pre-commit-secrets.sh .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
 ```
 
 ### Pré-requisitos
@@ -51,14 +54,16 @@ tr_conversion_not/
 ├── .env                   # Variáveis de ambiente (gitignored)
 ├── .gitignore
 ├── README.md
-├── scripts/               # 38 scripts Python/Shell usados pelos agentes
+├── scripts/               # 41 scripts Python/Shell usados pelos agentes
 │   ├── faq_triage.py          # FAQ matching para triagem de WIs
 │   ├── zendesk_client.py      # Busca tickets Zendesk (SSL corp + encoding)
 │   ├── git_history_analyzer.py # Histórico git de packages/procedures
 │   ├── suite_runner.py        # Runner SuiteAutomation (.jar → Oracle)
 │   ├── playwright_runner.py   # Runner E2E Playwright (Chromium)
 │   ├── explorer_runner.py     # Testes exploratórios visuais via browser
-│   └── ...                    # +32 scripts auxiliares
+│   ├── validate_agents.py     # Validação estrutural dos agentes
+│   ├── pre-commit-secrets.sh  # Pre-commit hook (bloqueia secrets)
+│   └── ...                    # +33 scripts auxiliares
 └── .claude/
     ├── knowledge/         # Base de conhecimento (371MB, 20k arquivos, gitignored)
     │   ├── architecture/      # Visão geral, padrões, tech-stack
@@ -188,6 +193,44 @@ claude /taxone-feature-dev "Implementar novo cálculo de DIFAL"
 claude /taxone-auto-fix 9bb6e572-8580-4eb3-86e6-a56bc5303d69
 ```
 
+## Segurança
+
+O repositório tem 3 camadas de proteção contra vazamento de credenciais:
+
+| Camada | Mecanismo | Descrição |
+|--------|-----------|-----------|
+| 1 | **CLAUDE.md regra 7** | Instrução para agentes e humanos: nunca hardcodar credentials |
+| 2 | **Pre-commit hook** | `scripts/pre-commit-secrets.sh` — bloqueia commits com passwords, tokens, API keys, private keys |
+| 3 | **validate_agents.py** | Detecta secrets hardcoded nos scripts como parte da validação estrutural |
+
+### Instalar pre-commit hook
+
+```bash
+cp scripts/pre-commit-secrets.sh .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+```
+
+O hook analisa o diff staged e bloqueia padrões como `password="..."`, `api_key="..."`, `Bearer <token>`, `PRIVATE KEY`. Para falsos positivos: `git commit --no-verify`.
+
+## Validação
+
+O script `validate_agents.py` verifica a integridade estrutural do projeto:
+
+```bash
+python scripts/validate_agents.py          # Rodar todas as verificações
+python scripts/validate_agents.py --fix    # Auto-corrigir issues triviais
+python scripts/validate_agents.py --json   # Output machine-readable
+```
+
+**Checks realizados:**
+- Frontmatter dos agentes (name, description, model, tools)
+- Frontmatter dos commands
+- Knowledge files referenciados existem
+- Scripts referenciados existem
+- Sintaxe Python dos scripts
+- Secrets hardcoded nos scripts
+- `.env.example` completo
+- Cross-references agents/commands/CLAUDE.md
+
 ## Repositórios Relacionados
 
 | Repositório | Branch | Conteúdo |
@@ -205,7 +248,6 @@ claude /taxone-auto-fix 9bb6e572-8580-4eb3-86e6-a56bc5303d69
 | # | Gap | Status |
 |---|-----|--------|
 | 6 | Falta agente de conversão Java (consome output do rule-extractor → gera código T1DW) | Pendente |
-| ~~7~~ | ~~Falta diretório `scripts/`~~ | Resolvido — 38 scripts copiados + zendesk_client.py criado |
-| ~~8~~ | ~~Sem testes/validação dos agentes~~ | Resolvido — `scripts/validate_agents.py` |
-| ~~8~~ | ~~Sem testes/validação dos agentes~~ | Resolvido — `scripts/validate_agents.py` |
-| ~~9~~ | ~~`taxone-pb` usa `model: sonnet` hardcoded~~ | Resolvido — todos os 14 agentes corrigidos para `inherit` |
+| ~~7~~ | ~~Falta diretório `scripts/`~~ | Resolvido — 41 scripts |
+| ~~8~~ | ~~Sem testes/validação dos agentes~~ | Resolvido — `validate_agents.py` + `pre-commit-secrets.sh` |
+| ~~9~~ | ~~`model: sonnet` hardcoded~~ | Resolvido — 14 agentes corrigidos para `inherit` |
