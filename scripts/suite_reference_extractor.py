@@ -310,9 +310,15 @@ def complement_with_db(grupo_map):
             return
 
     try:
+        db_user = os.environ.get("BD_USER", "")
+        db_pass = os.environ.get("BD_PASSWD", "")
+        db_dsn = os.environ.get("BD_DSN", "localhost:1521/MFSPDB")
+        if not db_user or not db_pass:
+            print("  BD_USER/BD_PASSWD not set, skipping DB complement")
+            return
         conn = oracledb.connect(
-            user="V2R010AC", password="V2R010AC",
-            dsn="localhost:1521/MFSPDB"
+            user=db_user, password=db_pass,
+            dsn=db_dsn
         )
         cur = conn.cursor()
 
