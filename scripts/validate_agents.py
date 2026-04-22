@@ -268,6 +268,43 @@ def validate_scripts(result: ValidationResult):
         except SyntaxError as e:
             result.error(f"scripts/{script_name}", f"Python syntax error: {e.msg} (line {e.lineno})")
 
+    # Check for hardcoded secrets in scripts
+    secret_patterns = [
+        (re.compile(r'password\s*=\s*"[^"]{3,}"', re.I), "hardcoded password"),
+        (re.compile(r"password\s*=\s*'[^']{3,}'", re.I), "hardcoded password"),
+        (re.compile(r'api_key\s*=\s*"[^"]{3,}"', re.I), "hardcoded API key"),
+        (re.compile(r"api_key\s*=\s*'[^']{3,}'", re.I), "hardcoded API key"),
+        (re.compile(r'token\s*=\s*"[A-Za-z0-9+/=_-]{20,}"'), "hardcoded token"),
+        (re.compile(r"token\s*=\s*'[A-Za-z0-9+/=_-]{20,}'"), "hardcoded token"),
+        (re.compile(r'PRIVATE KEY-----'), "private key"),
+    ]
+    # Files that legitimately reference password as variable names (not values)
+    skip_scripts = {"validate_agents.py", "pre-commit-secrets.sh"}
+    for script_name in scripts:
+        if script_name in skip_scripts:
+            continue
+        script_path = SCRIPTS_DIR / script_name
+        try:
+            source = script_path.read_text(encoding="utf-8", errors="replace")
+        except Exception:
+            continue
+        for lineno, line in enumerate(source.splitlines(), 1):
+            # Skip comments and lines reading from env/config (not hardcoded)
+            stripped = line.strip()
+            if stripped.startswith("#"):
+                continue
+            if any(safe in line for safe in [
+                "environ.get", "config[", "cfg[", "env_values",
+                ".get(", "getenv", "_get_env", "split(",
+            ]):
+                continue
+            for pattern, desc in secret_patterns:
+                if pattern.search(line):
+                    result.error(
+                        f"scripts/{script_name}:{lineno}",
+                        f"Possible {desc} — use environment variables instead"
+                    )
+
 
 def validate_env(result: ValidationResult):
     """Validate .env.example completeness."""

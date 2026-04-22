@@ -25,6 +25,7 @@ Agentes Claude para extração de regras de negócio do TAX ONE legado (PowerBui
 4. **Output dos agentes deve ser Markdown estruturado** com tags parseáveis, consumível por outros agentes downstream
 5. **Regras de negócio usam classificação padrão:** RV (Validação), RC (Cálculo), RF (Filtro), RT (Transformação), RW (Workflow)
 6. **Status de migração por regra:** `[NEW]`, `[CONVERTED]`, `[NATIVE]`, `[JAVA_GAP]`
+7. **NUNCA hardcodar credenciais** (passwords, tokens, API keys) em código — sempre usar variáveis de ambiente via `os.environ.get()` ou `env_loader.py`. Pre-commit hook bloqueia commits com secrets.
 
 ## Variáveis de ambiente
 
