@@ -1,7 +1,7 @@
 ---
 name: taxone-pb-reviewer
 description: Utilizar este agente quando for necessario realizar code review de codigo PowerBuilder implementado no TAX ONE, validando DataWindows, scripts de evento, tratamento de erros e convencoes PB.
-model: sonnet
+model: inherit
 color: red
 tools: ["Read", "Grep", "Glob"]
 ---

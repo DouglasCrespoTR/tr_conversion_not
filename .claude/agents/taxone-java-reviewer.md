@@ -1,7 +1,7 @@
 ---
 name: taxone-java-reviewer
 description: Utilizar este agente quando for necessario realizar code review de codigo Java implementado no TAX ONE, validando seguranca JDBC, resource management, exception handling e convencoes Java.
-model: sonnet
+model: inherit
 color: red
 tools: ["Read", "Grep", "Glob"]
 ---

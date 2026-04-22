@@ -1,7 +1,7 @@
 ---
 name: taxone-pm
 description: Utilizar este agente para triagem e classificacao de Work Items antes da analise tecnica. O PM atua como gate de qualidade, identificando not-a-bugs, feature requests, analises incompletas e duplicatas antes de encaminhar para o architect.
-model: sonnet
+model: inherit
 color: orange
 tools: ["Read", "Write", "Grep", "Glob", "Bash"]
 ---

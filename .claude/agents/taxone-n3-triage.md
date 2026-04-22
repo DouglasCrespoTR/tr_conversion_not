@@ -1,7 +1,7 @@
 ---
 name: taxone-n3-triage
 description: Utilizar este agente para enriquecer e estruturar Work Items N3 antes da triagem PM. O agente le dados da WI no ADO, cruza com Zendesk, patterns historicos, FAQ e knowledge embarcado, e produz um "N3 Brief" padronizado que serve como documento canonico para todos os agentes do pipeline.
-model: sonnet
+model: inherit
 color: cyan
 tools: ["Read", "Grep", "Glob", "Bash"]
 ---

@@ -1,7 +1,7 @@
 ---
 name: taxone-pb
 description: Utilizar este agente quando for necessario implementar codigo PowerBuilder no projeto TAX ONE, incluindo DataWindows, user objects, scripts de evento e componentes desktop.
-model: sonnet
+model: inherit
 color: blue
 tools: ["Read", "Write", "Edit", "Bash", "Grep", "Glob"]
 ---

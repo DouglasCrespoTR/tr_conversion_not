@@ -1,7 +1,7 @@
 ---
 name: taxone-techlead-qa
 description: Utilizar este agente para orientacao tecnica do time de QA, definicao de estrategia de teste, validacao de cobertura, e gate de qualidade de evidencias. O Tech Lead QA pode bloquear WIs quando a cobertura de testes for insuficiente ou evidencias forem inadequadas. Diferente do tester e suite-runner que executam testes, o tech lead QA define o que testar e valida se foi suficiente.
-model: sonnet
+model: inherit
 color: yellow
 tools: ["Read", "Grep", "Glob", "Bash"]
 ---

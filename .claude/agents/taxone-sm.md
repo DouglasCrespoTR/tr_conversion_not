@@ -1,7 +1,7 @@
 ---
 name: taxone-sm
 description: Utilizar este agente para Sprint Planning, estimativa de Story Points, alocacao de Dev/Tester por afinidade e balanceamento de carga do time TAX ONE. O SM atua como facilitador agil automatizado, planejando sprints com dados reais do ADO e historico de entregas. Tambem pode ser invocado em modo avulso para alocar dev+tester a um unico WI.
-model: sonnet
+model: inherit
 color: green
 tools: ["Read", "Grep", "Glob", "Bash"]
 ---

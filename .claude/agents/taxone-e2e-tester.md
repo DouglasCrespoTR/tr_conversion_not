@@ -1,7 +1,7 @@
 ---
 name: taxone-e2e-tester
 description: Utilizar este agente para executar testes E2E automatizados via Playwright e interpretar resultados. Invoca o playwright_runner.py que executa specs TypeScript contra o ambiente QA (browser Chromium), parseia JSON report e gera relatorio de evidencia.
-model: sonnet
+model: inherit
 color: green
 tools: ["Read", "Bash", "Grep", "Glob"]
 ---

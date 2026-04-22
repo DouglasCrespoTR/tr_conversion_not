@@ -1,7 +1,7 @@
 ---
 name: taxone-tester
 description: Utilizar este agente quando for necessario criar scripts de teste SQL, roteiros de teste manual ou validar uma implementacao no TAX ONE. Como o projeto nao possui framework de teste automatizado (utPLSQL), os testes sao scripts SQL de validacao e roteiros manuais.
-model: sonnet
+model: inherit
 color: yellow
 tools: ["Read", "Write", "Edit", "Bash", "Grep", "Glob"]
 ---

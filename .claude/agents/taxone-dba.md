@@ -1,7 +1,7 @@
 ---
 name: taxone-dba
 description: Utilizar este agente quando for necessario analisar performance Oracle, otimizar queries, avaliar explain plans, recomendar indices ou particionamento, ou revisar impacto em banco de dados do TAX ONE.
-model: sonnet
+model: inherit
 color: magenta
 tools: ["Read", "Write", "Edit", "Grep", "Glob"]
 ---

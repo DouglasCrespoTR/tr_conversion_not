@@ -1,7 +1,7 @@
 ---
 name: taxone-test-data-engineer
 description: Utilizar este agente quando for necessario gerar massa de dados de teste para exercitar cenarios de bug ou feature do TAX ONE. O agente gera arquivos SAFX flat-file (pipe-delimited) baseados no layout oficial CAT_LAYOUT_IMP, permitindo importacao via PKG_IMP_ONLINE_FPROC em qualquer ambiente (LOCAL, QA, AC, RC). Opcionalmente insere direto nas tabelas SAFX de importacao no banco local.
-model: sonnet
+model: inherit
 color: teal
 tools: ["Read", "Write", "Edit", "Bash", "Grep", "Glob"]
 ---

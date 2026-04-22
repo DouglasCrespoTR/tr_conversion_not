@@ -1,7 +1,7 @@
 ---
 name: taxone-suite-runner
 description: Utilizar este agente para executar testes de regressao automatizados da SuiteAutomation e interpretar resultados. Invoca o suite_runner.py que executa o SuiteTeste.jar contra o banco Oracle LOCAL, compara resultados esperados vs obtidos e gera relatorio de evidencia.
-model: sonnet
+model: inherit
 color: cyan
 tools: ["Read", "Bash", "Grep", "Glob"]
 ---

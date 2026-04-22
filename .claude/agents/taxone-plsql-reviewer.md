@@ -1,7 +1,7 @@
 ---
 name: taxone-plsql-reviewer
 description: Utilizar este agente quando for necessario realizar code review de codigo PL/SQL implementado no TAX ONE, validando padroes de qualidade, seguranca Oracle, convencoes e boas praticas PL/SQL.
-model: sonnet
+model: inherit
 color: red
 tools: ["Read", "Grep", "Glob"]
 ---

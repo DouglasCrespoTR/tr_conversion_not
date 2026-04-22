@@ -1,6 +1,9 @@
 # Claude Code local settings (user-specific)
 .claude/settings.local.json
 
+# Knowledge base (371MB, copied from taxone-support-dev)
+.claude/knowledge/
+
 # OS
 Thumbs.db
 Desktop.ini
@@ -11,6 +14,9 @@ Desktop.ini
 .vscode/
 *.swp
 *.swo
+
+# Environment (secrets)
+.env
 
 # Temp
 *.tmp
